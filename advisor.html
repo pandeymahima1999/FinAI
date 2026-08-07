@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Advisor - FinAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background-color: #cbd5e1; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16 items-center">
+                <a href="index.html" class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-2 rounded-lg"><i class="fa-solid fa-robot text-white text-sm"></i></div>
+                    <span class="font-bold text-xl text-slate-900">FinAI</span>
+                </a>
+                <div class="flex space-x-6 items-center">
+                    <a href="index.html" class="text-slate-500 hover:text-blue-600 text-sm font-medium transition">Home</a>
+                    <a href="advisor.html" class="text-blue-600 text-sm font-semibold border-b-2 border-blue-600 pb-1">AI Advisor</a>
+                    <a href="dashboard.html" class="text-slate-500 hover:text-blue-600 text-sm font-medium transition">Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="flex-grow max-w-7xl mx-auto w-full px-4 py-8 grid lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Input Form -->
+        <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-blue-100 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-solid fa-sliders"></i></div>
+                <h2 class="text-lg font-bold text-slate-900">Provide Context</h2>
+            </div>
+            
+            <form id="aiForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Current Age</label>
+                    <input type="number" id="age" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="e.g. 30" min="18">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Investment Amount (₹)</label>
+                    <input type="number" id="amount" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="e.g. 50000" min="1000">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Risk Appetite</label>
+                    <select id="risk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
+                        <option value="conservative">Conservative (Capital Protection)</option>
+                        <option value="moderate" selected>Moderate (Balanced Growth)</option>
+                        <option value="aggressive">Aggressive (Maximum Returns)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Primary Goal</label>
+                    <select id="goal" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
+                        <option value="wealth">Long-term Wealth Creation</option>
+                        <option value="house">Buying a House (Mid-term)</option>
+                        <option value="emergency">Emergency Fund (Short-term)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Strategy
+                </button>
+            </form>
+        </div>
+
+        <!-- Right Column: AI Output -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+            
+            <!-- AI Welcome / Processing state -->
+            <div id="aiConsole" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 min-h-[400px] flex flex-col">
+                <div class="flex items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+                    <div class="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl shadow-md"><i class="fa-solid fa-robot"></i></div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">FinAI Assistant</h2>
+                        <p class="text-sm text-green-600 font-medium flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Online & Ready</p>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div id="chatArea" class="flex-grow flex flex-col gap-4 overflow-y-auto">
+                    <div class="flex gap-4">
+                        <div class="bg-blue-50 text-slate-700 p-4 rounded-2xl rounded-tl-sm max-w-[80%] text-sm leading-relaxed">
+                            Hello! I am your AI Investment Advisor. Please fill out your details in the panel on the left, and I will instantly analyze the market to generate a highly customized portfolio strategy, including asset allocation and mutual fund recommendations.
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Result Chart (Hidden initially) -->
+            <div id="chartContainer" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hidden">
+                <h3 class="text-lg font-bold text-slate-900 mb-4 border-b border-slate-100 pb-2">Optimal Asset Allocation</h3>
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="w-full md:w-1/2 max-w-[250px]"><canvas id="allocationChart"></canvas></div>
+                    <div id="chartLegend" class="w-full md:w-1/2 mt-6 md:mt-0"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let allocChart = null;
+
+        document.getElementById('aiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const age = parseInt(document.getElementById('age').value);
+            const amount = parseInt(document.getElementById('amount').value);
+            const risk = document.getElementById('risk').value;
+            const goal = document.getElementById('goal').value;
+            const chatArea = document.getElementById('chatArea');
+
+            // 1. Add User Message
+            chatArea.innerHTML += `
+                <div class="flex gap-4 justify-end mt-4">
+                    <div class="bg-slate-800 text-white p-4 rounded-2xl rounded-tr-sm max-w-[80%] text-sm">
+                        Please create a strategy for ₹${amount.toLocaleString()} with a ${risk} risk profile for ${goal.replace('-', ' ')}. I am ${age} years old.
+                    </div>
+                </div>
+            `;
+
+            // 2. Add Loading Indicator
+            const loaderId = 'loader-' + Date.now();
+            chatArea.innerHTML += `
+                <div id="${loaderId}" class="flex gap-4 mt-4">
+                    <div class="bg-blue-50 p-4 rounded-2xl rounded-tl-sm text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-blue-600 animate-spin"></i>
+                        <span class="text-slate-600 font-medium">AI is analyzing market data</span>
+                        <div class="typing-indicator ml-2"><span></span><span></span><span></span></div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('aiConsole').scrollTop = document.getElementById('aiConsole').scrollHeight;
+
+            // Simulate Network/Processing Delay
+            setTimeout(() => {
+                document.getElementById(loaderId).remove();
+                
+                // Advanced AI Logic Engine
+                let eq = 0, dt = 0, gl = 0;
+                let strategyText = "";
+                let fundSuggestions = "";
+
+                if (goal === 'emergency') {
+                    eq = 10; dt = 90; gl = 0;
+                    strategyText = "Since your goal is building an emergency fund, liquidity and capital protection are paramount. We heavily weight Debt instruments.";
+                    fundSuggestions = "Liquid Funds, Arbitrage Funds, Bank FDs.";
+                } else if (goal === 'house') {
+                    if(risk === 'aggressive') { eq = 60; dt = 30; gl = 10; }
+                    else if (risk === 'moderate') { eq = 40; dt = 50; gl = 10; }
+                    else { eq = 20; dt = 70; gl = 10; }
+                    strategyText = "For a mid-term goal like buying a house, a balanced approach is required to beat inflation while protecting the accumulated corpus.";
+                    fundSuggestions = "Balanced Advantage Funds, Short Duration Debt Funds, Nifty 50 Index Funds.";
+                } else {
+                    // Wealth Creation (Long Term)
+                    let baseEq = 100 - age;
+                    if(risk === 'aggressive') { eq = Math.min(90, baseEq + 15); }
+                    else if(risk === 'conservative') { eq = Math.max(30, baseEq - 15); }
+                    else { eq = baseEq; }
+                    
+                    gl = 10; // Standard gold hedge
+                    dt = 100 - eq - gl;
+                    strategyText = "For long-term wealth creation, equity is your best asset class. The allocation is optimized based on your age and risk tolerance to maximize compound interest.";
+                    fundSuggestions = "Flexi Cap Funds, Mid Cap Mutual Funds, Sovereign Gold Bonds (SGBs).";
+                }
+
+                const formatAmt = (pct) => "₹" + (amount * pct / 100).toLocaleString();
+
+                // 3. Add AI Response
+                chatArea.innerHTML += `
+                    <div class="flex gap-4 mt-4 mb-4">
+                        <div class="bg-blue-50 border border-blue-100 text-slate-800 p-5 rounded-2xl rounded-tl-sm w-full text-sm leading-relaxed shadow-sm">
+                            <h4 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-2"><i class="fa-solid fa-file-invoice-dollar"></i> Strategy Report Generated</h4>
+                            <p class="mb-3">${strategyText}</p>
+                            
+                            <div class="bg-white p-3 rounded-lg border border-slate-200 mb-3">
+                                <p class="font-semibold text-slate-900 mb-2">Recommended Allocation:</p>
+                                <ul class="space-y-1 text-slate-700">
+                                    <li class="flex justify-between"><span><i class="fa-solid fa-arrow-trend-up text-blue-500 w-5"></i> Equity:</span> <strong>${eq}% (${formatAmt(eq)})</strong></li>
+                                    <li class="flex justify-between"><span><i class="fa-solid fa-piggy-bank text-emerald-500 w-5"></i> Debt:</span> <strong>${dt}% (${formatAmt(dt)})</strong></li>
+                                    <li class="flex justify-between"><span><i class="fa-solid fa-coins text-yellow-500 w-5"></i> Gold:</span> <strong>${gl}% (${formatAmt(gl)})</strong></li>
+                                </ul>
+                            </div>
+
+                            <p class="mb-2"><strong class="text-slate-900">Ideal Instruments:</strong> ${fundSuggestions}</p>
+                            <div class="bg-yellow-50 text-yellow-800 p-3 rounded-lg text-xs border border-yellow-200 mt-4">
+                                <i class="fa-solid fa-lightbulb"></i> <strong>Pro Tip:</strong> Rebalance this portfolio every 6-12 months. If Equity grows beyond its target percentage due to a bull market, sell the excess and move it to Debt to maintain the ${eq}:${dt} ratio.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('aiConsole').scrollTop = document.getElementById('aiConsole').scrollHeight;
+
+                // 4. Update Chart
+                document.getElementById('chartContainer').classList.remove('hidden');
+                document.getElementById('chartContainer').classList.add('block');
+                
+                const ctx = document.getElementById('allocationChart').getContext('2d');
+                if (allocChart) allocChart.destroy();
+
+                allocChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Equity', 'Debt', 'Gold'],
+                        datasets: [{
+                            data: [eq, dt, gl],
+                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '75%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                document.getElementById('chartLegend').innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3"><div class="w-4 h-4 rounded-full bg-blue-500"></div><span class="font-medium">Equity (${eq}%)</span></div>
+                        <div class="flex items-center gap-3"><div class="w-4 h-4 rounded-full bg-emerald-500"></div><span class="font-medium">Debt (${dt}%)</span></div>
+                        <div class="flex items-center gap-3"><div class="w-4 h-4 rounded-full bg-amber-500"></div><span class="font-medium">Gold (${gl}%)</span></div>
+                    </div>
+                `;
+
+            }, 1800); // 1.8s delay for realistic AI feel
+        });
+    </script>
+</body>
+</html>
