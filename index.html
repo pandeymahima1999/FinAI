@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartNivesh - AI Investment Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white py-6 shadow-md">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-3xl font-bold">SmartNivesh AI 📈</h1>
+            <p class="mt-2 text-blue-100">आपकी पर्सनल फाइनेंस और इन्वेस्टमेंट गाइड</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-8 grid md:grid-cols-2 gap-8">
+        
+        <!-- Input Form Section -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+            <h2 class="text-xl font-semibold mb-6 text-gray-700 border-b pb-2">अपनी जानकारी भरें</h2>
+            
+            <form id="investmentForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">आपकी उम्र (Years)</label>
+                    <input type="number" id="age" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="उदा: 25" min="18" max="80">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">निवेश राशि (₹)</label>
+                    <input type="number" id="amount" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="उदा: 10000" min="500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">रिस्क क्षमता (Risk Tolerance)</label>
+                    <select id="risk" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="low">कम (Low Risk - सुरक्षित)</option>
+                        <option value="medium" selected>मध्यम (Medium Risk - संतुलित)</option>
+                        <option value="high">अधिक (High Risk - ज्यादा रिटर्न)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">निवेश का लक्ष्य (Goal)</label>
+                    <select id="goal" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="short">शॉर्ट टर्म (1-3 साल)</option>
+                        <option value="medium">मीडियम टर्म (3-7 साल)</option>
+                        <option value="long">लॉन्ग टर्म (7+ साल)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300 mt-4">
+                    AI सलाह प्राप्त करें ✨
+                </button>
+            </form>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hidden flex-col items-center justify-center">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">आपका स्मार्ट पोर्टफोलियो</h2>
+            
+            <div class="w-full max-w-[250px] mb-6">
+                <canvas id="portfolioChart"></canvas>
+            </div>
+
+            <div id="adviceText" class="text-sm text-gray-600 bg-blue-50 p-4 rounded-lg w-full mb-6">
+                <!-- AI Advice will be inserted here -->
+            </div>
+
+            <a href="#" class="w-full text-center bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition duration-300">
+                🚀 फ्री Demat अकाउंट खोलें
+            </a>
+            <p class="text-xs text-gray-400 mt-3 text-center">*यह एक AI जनरेटेड सलाह है, निवेश से पहले अपने फाइनेंसियल एडवाइजर से बात करें।</p>
+        </div>
+
+    </main>
+
+    <script>
+        let myChart = null;
+
+        document.getElementById('investmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const age = parseInt(document.getElementById('age').value);
+            const amount = parseInt(document.getElementById('amount').value);
+            const risk = document.getElementById('risk').value;
+            const goal = document.getElementById('goal').value;
+
+            // AI Logic Engine (Basic Rules based on Mutual Fund rebalancing principles)
+            let equity = 0;
+            let debt = 0;
+            let gold = 0;
+
+            // Base allocation by rule of 100
+            let baseEquity = 100 - age;
+            if (baseEquity < 0) baseEquity = 0;
+
+            if (goal === 'short') {
+                equity = 20; debt = 70; gold = 10;
+            } else if (goal === 'medium') {
+                if (risk === 'low') { equity = 30; debt = 60; gold = 10; }
+                else if (risk === 'high') { equity = 60; debt = 30; gold = 10; }
+                else { equity = 50; debt = 40; gold = 10; }
+            } else {
+                // Long term
+                if (risk === 'low') { equity = 50; debt = 40; gold = 10; }
+                else if (risk === 'high') { equity = baseEquity + 10 > 90 ? 90 : baseEquity + 10; debt = 100 - equity - 10; gold = 10; }
+                else { equity = baseEquity; debt = 100 - equity - 10; gold = 10; }
+            }
+
+            // Fallbacks to ensure it equals 100
+            if(equity + debt + gold !== 100) {
+                debt = 100 - (equity + gold);
+            }
+
+            const equityAmt = (amount * equity / 100).toFixed(0);
+            const debtAmt = (amount * debt / 100).toFixed(0);
+            const goldAmt = (amount * gold / 100).toFixed(0);
+
+            // Update UI
+            document.getElementById('resultSection').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('flex');
+
+            const adviceHtml = `
+                <p class="mb-2"><strong>📊 निवेश रणनीति (Allocation):</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><span class="text-blue-600 font-semibold">Equity (Mutual Funds/Stocks):</span> ${equity}% (₹${equityAmt})</li>
+                    <li><span class="text-green-600 font-semibold">Debt (Bonds/FDs):</span> ${debt}% (₹${debtAmt})</li>
+                    <li><span class="text-yellow-600 font-semibold">Gold (SGB/Digital Gold):</span> ${gold}% (₹${goldAmt})</li>
+                </ul>
+                <p class="mt-3 text-xs">पोर्टफोलियो को हर 6 महीने में रीबैलेंस (Rebalance) करना न भूलें!</p>
+            `;
+            document.getElementById('adviceText').innerHTML = adviceHtml;
+
+            // Render Chart
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Equity', 'Debt', 'Gold'],
+                    datasets: [{
+                        data: [equity, debt, gold],
+                        backgroundColor: ['#2563eb', '#16a34a', '#ca8a04'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+            
+            // Scroll to results on mobile
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
