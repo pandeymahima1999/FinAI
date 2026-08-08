@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In - FinAI</title>
+    <title>Log In - FinAI (Firebase Secured)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -16,7 +16,7 @@
         <div class="text-center mb-8">
             <a href="index.html" class="inline-flex bg-blue-600 p-3 rounded-xl shadow-lg shadow-blue-500/30 mb-6"><i class="fa-solid fa-layer-group text-white text-xl"></i></a>
             <h1 class="text-2xl font-bold text-slate-900">Welcome back</h1>
-            <p class="text-slate-500 mt-2">Enter your details to access your dashboard.</p>
+            <p class="text-slate-500 mt-2">Log in securely with Firebase.</p>
         </div>
 
         <form id="loginForm" class="space-y-5">
@@ -29,7 +29,10 @@
                 <input type="password" id="password" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="••••••••">
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30 mt-4">
+            <!-- Error Message Box -->
+            <p id="errorMessage" class="text-red-500 text-sm font-medium hidden"></p>
+
+            <button type="submit" id="emailLoginBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl transition shadow-lg shadow-blue-600/30 mt-4">
                 Log In
             </button>
             
@@ -39,34 +42,85 @@
                 <div class="flex-grow border-t border-slate-200"></div>
             </div>
 
-            <button type="button" onclick="fakeGoogleAuth()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-3">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Google Auth
+            <button type="button" id="googleLoginBtn" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 rounded-xl transition flex items-center justify-center gap-3">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Sign in with Google
             </button>
         </form>
-
-        <p class="text-center text-sm text-slate-600 mt-8">
-            Don't have an account? <a href="register.html" class="font-bold text-blue-600 hover:text-blue-700">Sign up</a>
-        </p>
     </div>
 
-    <script>
-        function doLogin(email, name="User") {
-            localStorage.setItem('finai_user', JSON.stringify({ name: name, email: email }));
-            window.location.href = 'dashboard.html';
-        }
+    <!-- Firebase SDKs (Modular v9/v10) -->
+    <script type="module">
+        // 1. Import Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            GoogleAuthProvider, 
+            signInWithPopup 
+        } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // 2. YOUR FIREBASE CONFIGURATION (Replace this with your actual config from Firebase Console)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "your-app-name.firebaseapp.com",
+            projectId: "your-app-name",
+            storageBucket: "your-app-name.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // 3. Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        const errorMessage = document.getElementById('errorMessage');
+        const emailLoginBtn = document.getElementById('emailLoginBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+
+        // --- Email & Password Login ---
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
-            setTimeout(() => doLogin(document.getElementById('email').value), 1200);
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            emailLoginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
+            errorMessage.classList.add('hidden');
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Success
+                    const user = userCredential.user;
+                    localStorage.setItem('finai_user', JSON.stringify({ name: user.email, email: user.email }));
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((error) => {
+                    // Error
+                    emailLoginBtn.innerHTML = 'Log In';
+                    errorMessage.innerText = error.message;
+                    errorMessage.classList.remove('hidden');
+                });
         });
 
-        function fakeGoogleAuth() {
-            // Simulated Advanced Google Auth for Static Pages
-            alert("Google Auth Initialized. Logging in securely...");
-            setTimeout(() => doLogin("demo.google@finai.com", "Google User"), 1000);
-        }
+        // --- Google Sign-In ---
+        googleLoginBtn.addEventListener('click', () => {
+            googleLoginBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Connecting...';
+            errorMessage.classList.add('hidden');
+
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // Success
+                    const user = result.user;
+                    localStorage.setItem('finai_user', JSON.stringify({ name: user.displayName, email: user.email }));
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((error) => {
+                    // Error
+                    googleLoginBtn.innerHTML = '<img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5"> Sign in with Google';
+                    errorMessage.innerText = error.message;
+                    errorMessage.classList.remove('hidden');
+                });
+        });
     </script>
 </body>
 </html>

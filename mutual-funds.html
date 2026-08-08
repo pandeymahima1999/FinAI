@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutual Fund Tracker - FinAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; color: #111827; }
+    </style>
+</head>
+<body>
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="flex items-center gap-2">
+                        <div class="bg-blue-600 text-white p-1 rounded"><i class="fa-solid fa-chart-simple"></i></div>
+                        <span class="font-bold text-xl tracking-tight text-gray-900">FinAI</span>
+                    </a>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="index.html" class="text-gray-600 hover:text-blue-600 text-sm font-medium">Home</a>
+                        <a href="screens.html" class="text-gray-600 hover:text-blue-600 text-sm font-medium">Screens</a>
+                        <a href="mutual-funds.html" class="text-blue-600 text-sm font-medium border-b-2 border-blue-600 py-5">Mutual Funds</a>
+                        <a href="article.html" class="text-gray-600 hover:text-blue-600 text-sm font-medium">Learn (Wiki)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-10">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Mutual Fund Screener & Tracker</h1>
+            <p class="text-gray-600 mt-2">Analyze, track, and optimize asset allocation across top-performing funds.</p>
+        </div>
+
+        <!-- Rebalancing Alert Widget -->
+        <div class="bg-blue-50 border-l-4 border-blue-600 p-5 rounded-r-lg mb-8 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-scale-balanced text-blue-600 text-xl"></i>
+                <div>
+                    <h3 class="font-bold text-blue-900">Portfolio Rebalancing Insights</h3>
+                    <p class="text-sm text-blue-800 mt-1">Easily identify when to execute purchases in debt funds or process redemptions in overvalued equity funds to maintain your target asset allocation.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-lg font-bold">Top Performing Funds</h2>
+                <select class="border border-gray-300 rounded text-sm px-2 py-1">
+                    <option>Equity (Flexi Cap)</option>
+                    <option>Debt (Liquid)</option>
+                    <option>Hybrid</option>
+                </select>
+            </div>
+            <table class="w-full text-sm text-left">
+                <thead class="bg-white text-gray-500 font-medium border-b border-gray-200">
+                    <tr>
+                        <th class="py-3 px-4">Fund Name</th>
+                        <th class="py-3 px-4">AUM (Cr)</th>
+                        <th class="py-3 px-4">NAV</th>
+                        <th class="py-3 px-4 text-green-600">1Y Return</th>
+                        <th class="py-3 px-4 text-green-600">3Y Return</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    <tr class="hover:bg-gray-50 cursor-pointer">
+                        <td class="py-3 px-4 font-medium text-blue-600">Parag Parikh Flexi Cap Fund</td>
+                        <td class="py-3 px-4">₹ 45,210</td>
+                        <td class="py-3 px-4">₹ 68.45</td>
+                        <td class="py-3 px-4 text-green-600">24.5%</td>
+                        <td class="py-3 px-4 text-green-600">21.2%</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 cursor-pointer">
+                        <td class="py-3 px-4 font-medium text-blue-600">Nippon India Small Cap Fund</td>
+                        <td class="py-3 px-4">₹ 38,400</td>
+                        <td class="py-3 px-4">₹ 145.20</td>
+                        <td class="py-3 px-4 text-green-600">38.2%</td>
+                        <td class="py-3 px-4 text-green-600">29.4%</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 cursor-pointer">
+                        <td class="py-3 px-4 font-medium text-blue-600">HDFC Balanced Advantage Fund</td>
+                        <td class="py-3 px-4">₹ 62,100</td>
+                        <td class="py-3 px-4">₹ 412.10</td>
+                        <td class="py-3 px-4 text-green-600">18.4%</td>
+                        <td class="py-3 px-4 text-green-600">15.8%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
