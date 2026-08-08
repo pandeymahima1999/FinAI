@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FinAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; display: none; } /* Hidden until auth check */
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="index.html" class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-1.5 rounded-lg"><i class="fa-solid fa-layer-group text-white text-xs"></i></div>
+                    <span class="font-bold text-xl tracking-tight">FinAI</span>
+                </a>
+                <div class="flex space-x-8 items-center">
+                    <a href="advisor.html" class="text-slate-500 hover:text-blue-600 font-medium transition text-sm">AI Advisor</a>
+                    <a href="dashboard.html" class="text-blue-600 font-bold border-b-2 border-blue-600 pb-1 text-sm mt-1">Dashboard</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="userGreeting" class="text-sm font-semibold text-slate-700 hidden md:block"></span>
+                    <button onclick="logout()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg font-medium transition"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-slate-900">Portfolio Overview</h1>
+            <p class="text-slate-500 text-sm">Real-time assets, AI alerts, and market tracking.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Advanced Chart -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <p class="text-sm font-medium text-slate-500 uppercase tracking-wide">Total Balance</p>
+                        <h2 class="text-3xl font-extrabold text-slate-900 mt-1">₹12,45,230</h2>
+                        <p class="text-sm text-green-600 font-bold mt-1"><i class="fa-solid fa-arrow-up"></i> +₹45,230 (3.8%) <span class="text-slate-400 font-normal ml-1">Past month</span></p>
+                    </div>
+                </div>
+                <div class="h-80 w-full"><canvas id="mainChart"></canvas></div>
+            </div>
+
+            <div class="space-y-6">
+                <!-- AI Alert Widget -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-6 rounded-2xl shadow-lg text-white">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="bg-blue-500/20 p-2 rounded-lg text-blue-400"><i class="fa-solid fa-robot"></i></div>
+                        <h3 class="font-bold">AI Action Required</h3>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed mb-5">
+                        Market volatility detected. Your Equity allocation is highly concentrated. AI recommends moving 5% to Liquid Debt.
+                    </p>
+                    <button class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl transition text-sm">Auto-Rebalance Now</button>
+                </div>
+
+                <!-- Allocation Widget -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-900 mb-4">Asset Distribution</h3>
+                    <div class="w-48 mx-auto mb-4"><canvas id="donutChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Advanced Auth Guard (Protects page)
+        const userStr = localStorage.getItem('finai_user');
+        if(!userStr) {
+            window.location.href = 'login.html'; // Kick out if not logged in
+        } else {
+            const user = JSON.parse(userStr);
+            document.getElementById('userGreeting').innerText = `Hi, ${user.name.split(' ')[0]}`;
+            document.body.style.display = 'flex'; // Show page
+        }
+
+        function logout() {
+            localStorage.removeItem('finai_user');
+            window.location.href = 'index.html';
+        }
+
+        // Charts
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Value',
+                    data: [1050000, 1080000, 1060000, 1120000, 1180000, 1245230],
+                    borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { border: { display: false } } } }
+        });
+
+        const ctxDonut = document.getElementById('donutChart').getContext('2d');
+        new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: { labels: ['Equity', 'Debt', 'Gold'], datasets: [{ data: [70, 20, 10], backgroundColor: ['#2563eb', '#10b981', '#f59e0b'], borderWidth: 0 }] },
+            options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } } }
+        });
+    </script>
+</body>
+</html>

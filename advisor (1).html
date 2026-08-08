@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Advisor - FinAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; display: none; }
+        .typing span { display: inline-block; width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite ease-in-out; }
+        .typing span:nth-child(1) { animation-delay: -0.32s; }
+        .typing span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+            <a href="index.html" class="flex items-center gap-2"><div class="bg-blue-600 p-1.5 rounded-lg"><i class="fa-solid fa-layer-group text-white text-xs"></i></div><span class="font-bold text-xl">FinAI</span></a>
+            <div class="flex space-x-8 items-center">
+                <a href="advisor.html" class="text-blue-600 font-bold border-b-2 border-blue-600 pb-1 text-sm mt-1">AI Advisor</a>
+                <a href="dashboard.html" class="text-slate-500 hover:text-blue-600 font-medium transition text-sm">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full grid lg:grid-cols-12 gap-8">
+        <!-- Input Form -->
+        <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
+            <h2 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2"><i class="fa-solid fa-sliders text-blue-600"></i> Strategy Context</h2>
+            <form id="aiForm" class="space-y-4">
+                <div><label class="block text-sm font-semibold mb-1">Age</label><input type="number" id="age" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="30"></div>
+                <div><label class="block text-sm font-semibold mb-1">Capital (₹)</label><input type="number" id="amount" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl" placeholder="100000"></div>
+                <div><label class="block text-sm font-semibold mb-1">Risk Profile</label><select id="risk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl"><option value="safe">Conservative</option><option value="balanced" selected>Balanced</option><option value="high">Aggressive</option></select></div>
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl mt-2 transition">Run AI Engine</button>
+            </form>
+        </div>
+
+        <!-- Output Console -->
+        <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col h-[600px]">
+            <div class="border-b border-slate-100 pb-4 mb-4 flex gap-3 items-center">
+                <div class="bg-blue-100 text-blue-600 p-2 rounded-full"><i class="fa-solid fa-robot"></i></div>
+                <div><h3 class="font-bold text-lg text-slate-900">Quant Model v3</h3><p class="text-xs font-semibold text-green-500">SYSTEM ONLINE</p></div>
+            </div>
+            
+            <div id="chat" class="flex-grow overflow-y-auto space-y-4 pr-2">
+                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl rounded-tl-none max-w-[85%] text-sm text-slate-700">Enter your data on the left to generate an institutional-grade asset allocation map.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auth Guard
+        if(!localStorage.getItem('finai_user')) window.location.href = 'login.html';
+        else document.body.style.display = 'flex';
+
+        document.getElementById('aiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const age = parseInt(document.getElementById('age').value);
+            const amt = parseInt(document.getElementById('amount').value);
+            const risk = document.getElementById('risk').value;
+            const chat = document.getElementById('chat');
+
+            chat.innerHTML += `<div class="flex justify-end"><div class="bg-slate-900 text-white p-4 rounded-xl rounded-tr-none text-sm">Calculate portfolio for ₹${amt} (Age: ${age}, Risk: ${risk})</div></div>`;
+            const lid = 'l'+Date.now();
+            chat.innerHTML += `<div id="${lid}" class="bg-slate-50 border border-slate-100 p-4 rounded-xl rounded-tl-none max-w-[85%] text-sm text-slate-500 flex items-center gap-2"><i class="fa-solid fa-microchip text-blue-500"></i> Processing <div class="typing"><span></span><span></span><span></span></div></div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            setTimeout(() => {
+                document.getElementById(lid).remove();
+                
+                let eq = risk === 'high' ? Math.min(90, 110-age) : risk === 'safe' ? Math.max(20, 80-age) : 100-age;
+                let gl = 10; let dt = 100 - eq - gl;
+                
+                const cid = 'c'+Date.now();
+                chat.innerHTML += `
+                    <div class="bg-blue-50/50 border border-blue-100 p-5 rounded-xl rounded-tl-none w-full shadow-sm">
+                        <h4 class="font-bold text-slate-900 mb-3 border-b border-blue-100 pb-2"><i class="fa-solid fa-chart-pie text-blue-600 mr-2"></i> Generated Strategy</h4>
+                        <div class="grid grid-cols-2 gap-4 items-center">
+                            <div class="w-full max-w-[200px] mx-auto"><canvas id="${cid}"></canvas></div>
+                            <div class="space-y-2 text-sm font-medium">
+                                <div class="flex justify-between p-2 bg-white rounded border border-slate-100"><span class="text-blue-600">Equity</span> <span>${eq}% (₹${(amt*eq/100).toLocaleString()})</span></div>
+                                <div class="flex justify-between p-2 bg-white rounded border border-slate-100"><span class="text-green-600">Debt</span> <span>${dt}% (₹${(amt*dt/100).toLocaleString()})</span></div>
+                                <div class="flex justify-between p-2 bg-white rounded border border-slate-100"><span class="text-amber-500">Gold</span> <span>${gl}% (₹${(amt*gl/100).toLocaleString()})</span></div>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                new Chart(document.getElementById(cid).getContext('2d'), {
+                    type: 'doughnut', data: { datasets: [{ data: [eq, dt, gl], backgroundColor: ['#2563eb', '#10b981', '#f59e0b'], borderWidth: 0 }] },
+                    options: { cutout: '70%', animation: { animateScale: true } }
+                });
+                chat.scrollTop = chat.scrollHeight;
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
