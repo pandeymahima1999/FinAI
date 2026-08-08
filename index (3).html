@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock analysis and screening tool - FinAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; color: #111827; }
+    </style>
+</head>
+<body>
+    <!-- Screener Navbar Clone -->
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="flex items-center gap-2">
+                        <div class="bg-blue-600 text-white p-1 rounded"><i class="fa-solid fa-chart-simple"></i></div>
+                        <span class="font-bold text-xl tracking-tight text-gray-900">FinAI</span>
+                    </a>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="#" class="text-gray-600 hover:text-blue-600 text-sm font-medium">Home</a>
+                        <a href="#" class="text-gray-600 hover:text-blue-600 text-sm font-medium">Screens</a>
+                        <a href="article.html" class="text-gray-600 hover:text-blue-600 text-sm font-medium">Learn (Wiki)</a>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="text-gray-600 hover:text-blue-600 text-sm font-medium hidden md:block">Login</a>
+                    <a href="#" class="border border-blue-600 text-blue-600 px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-50">Get free account</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Screener Home Body -->
+    <main class="max-w-3xl mx-auto px-4 pt-32 pb-24 text-center">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Stock analysis and screening tool</h1>
+        <p class="text-lg text-gray-600 mb-8">for investors in India.</p>
+        
+        <div class="relative max-w-2xl mx-auto">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+            </div>
+            <input type="text" class="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-lg shadow-sm" placeholder="Search for a company" onkeypress="if(event.key === 'Enter') window.location.href='company.html'">
+            <div class="absolute inset-y-0 right-0 pr-2 flex items-center">
+                <button onclick="window.location.href='company.html'" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded border border-gray-200 text-sm font-medium transition">Search</button>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-sm text-gray-500">
+            Or try: <a href="company.html" class="text-blue-600 hover:underline">Reliance Inds.</a>, <a href="company.html" class="text-blue-600 hover:underline">TCS</a>, <a href="company.html" class="text-blue-600 hover:underline">HDFC Bank</a>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-200 bg-white py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+            Data provided by C-MOTS Internet Technologies Pvt Ltd. 
+        </div>
+    </footer>
+</body>
+</html>
